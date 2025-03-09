@@ -7,7 +7,8 @@ from app.utils import (
     preprocess_data,
     aggregate_weekly,
     adjust_outliers,
-    run_prophet
+    run_prophet,
+    select_good_categories
 )
 
 router = APIRouter()
@@ -18,7 +19,9 @@ def predict_endpoint(data_request: DataRequest):
     try:
         # 1. 입력 데이터를 DataFrame으로 변환
         # 백엔드에서 이미 전처리 및 주 단위 집계(12주)된 데이터가 전달
+        print("Received JSON:", data_request)  # ✅ JSON 확인
         df = pd.DataFrame([record.dict() for record in data_request.data])
+        print("Converted DataFrame:", df)  # ✅ DataFrame 변환 확인
         
         # # 2. 전처리 => 백엔드에서 처리 
         # df = preprocess_data(df)
@@ -42,4 +45,5 @@ def predict_endpoint(data_request: DataRequest):
         return {"predict_results": predict_results}
     
     except Exception as e:
+        print("Error:", str(e))  # ✅ 오류 메시지 출력
         raise HTTPException(status_code=500, detail=str(e))
