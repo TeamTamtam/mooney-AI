@@ -17,16 +17,20 @@ router = APIRouter()
 def predict_endpoint(data_request: DataRequest):
     try:
         # 1. 입력 데이터를 DataFrame으로 변환
+        # 백엔드에서 이미 전처리 및 주 단위 집계(12주)된 데이터가 전달
         df = pd.DataFrame([record.dict() for record in data_request.data])
         
-        # 2. 전처리
-        df = preprocess_data(df)
+        # # 2. 전처리 => 백엔드에서 처리 
+        # df = preprocess_data(df)
         
-        # 3. 주 단위 집계
-        weekly_df_full = aggregate_weekly(df)
+        # # 3. 주 단위 집계
+        # weekly_df_full = aggregate_weekly(df)
+        
+        # 4. 예측이 유의미한 카테고리 뽑기
+        selected_df = select_good_categories(df)
         
         # 4. 이상치 보정
-        adjusted_df = adjust_outliers(weekly_df_full)
+        adjusted_df = adjust_outliers(selected_df)
         final_df = adjusted_df[["item_id", "timestamp", "target"]].copy()
         final_df["timestamp"] = pd.to_datetime(final_df["timestamp"])
         

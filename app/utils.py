@@ -55,6 +55,42 @@ def aggregate_weekly(df: pd.DataFrame) -> pd.DataFrame:
     weekly_df_full["target"] = weekly_df_full["target"].fillna(0)
     return weekly_df_full
 
+def select_good_categories(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    예측에 유의미한 카테고리만 선택합니다.
+    조건:
+      - 각 카테고리의 target 값들의 표준편차(std)가 0 이상
+      - 해당 카테고리의 0 비율(zero_rate)이 50% 미만
+      - 표준편차가 임계치 미만 (예: 150,000 미만)
+      - 예를 들어 "식비"는 항상 포함
+    """
+    
+    # 예시: 원본 데이터 df가 있고, 'item_id'와 'target' 컬럼이 있다고 가정
+      # 각 카테고리별 target 통계 계산
+    stats_df = df.groupby('item_id')['target'].agg(['std', 'count']).reset_index()
+    # 각 카테고리별 0의 비율 계산
+    zero_stats = df.groupby('item_id')['target'].apply(lambda x: (x == 0).mean()).reset_index().rename(columns={'target': 'zero_rate'})
+    stats_df = stats_df.merge(zero_stats, on='item_id')
+    
+    # 제외할 카테고리 (필요 시 정의)
+    exclude_categories = []  # 예: ["EXAMPLE_CATEGORY"] 등, 없으면 빈 리스트
+    
+    # 조건에 따라 필터링: std > 0, zero_rate < 0.5, 제외할 카테고리가 아닌 경우
+    stats_df_valid = stats_df[(stats_df['std'] > 0) & (stats_df['zero_rate'] < 0.5) & (~stats_df['item_id'].isin(exclude_categories))]
+
+    # 표준편차 임계치 적용 (예: std < 100,000) 및 "식비" 항상 포함
+    std_threshold = 150000  # 데이터 특성에 따라 조정
+    selected_categories = stats_df_valid[stats_df_valid['std'] < std_threshold]['item_id'].tolist()
+
+    if "FOOD" not in selected_categories:
+        selected_categories.append("FOOD")
+
+    print("\n예측 대상으로 선택된 카테고리:")
+    print(selected_categories)
+    
+    # 원본 DataFrame에서 선택된 카테고리만 필터링하여 반환
+    return df[df['item_id'].isin(selected_categories)]
+
 def adjust_outliers(weekly_df_full: pd.DataFrame) -> pd.DataFrame:
     """
     이상치 보정: 이동평균, IQR 및 Z-score를 사용한 보정.
