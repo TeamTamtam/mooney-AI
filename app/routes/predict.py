@@ -29,6 +29,13 @@ def predict_endpoint(data_request: DataRequest):
         # # 3. 주 단위 집계
         # weekly_df_full = aggregate_weekly(df)
         
+         # ✅ 컬럼명 변경: expense_category → item_id
+        df = df.rename(columns={"expense_category": "item_id"})
+        df = df.rename(columns={"amount": "target"})
+
+
+        print("✅ Renamed DataFrame:", df)  # 컬럼명 변경 확인
+        
         # 4. 예측이 유의미한 카테고리 뽑기
         selected_df = select_good_categories(df)
         
