@@ -9,7 +9,6 @@ from concurrent.futures import ProcessPoolExecutor
 import multiprocessing
 
 
-
 def calculate_smape(y_true, y_pred):
     y_true, y_pred = np.array(y_true), np.array(y_pred)
     denominator = (np.abs(y_true) + np.abs(y_pred)) / 2.0
