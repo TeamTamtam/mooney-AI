@@ -16,6 +16,9 @@ router = APIRouter()
 # 12주 데이터 받아와야 함
 @router.post("/predict")
 def predict_endpoint(data_request: DataRequest):
+    import time
+    total_start = time.time()
+
     try:
         # 1. 입력 데이터를 DataFrame으로 변환
         # 백엔드에서 이미 전처리 및 주 단위 집계(12주)된 데이터가 전달
@@ -49,6 +52,8 @@ def predict_endpoint(data_request: DataRequest):
         
         predict_results = results_df[['Category', 'yhat_adjusted']].to_dict(orient="records")
 
+        total_end = time.time()
+        print(f"/predict 요청 처리 총 시간: {total_end - total_start:.3f}초")
         return {"predict_results": predict_results}
     
     except Exception as e:
