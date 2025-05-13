@@ -74,7 +74,8 @@ def select_good_categories(df: pd.DataFrame) -> pd.DataFrame:
       - 각 카테고리의 target 값들의 표준편차(std)가 0 이상
       - 해당 카테고리의 0 비율(zero_rate)이 50% 미만
       - 표준편차가 임계치 미만 (예: 150,000 미만)
-      - 예를 들어 "식비"는 항상 포함
+      - "식비"는 항상 포함
+      - std와 zero_rate가 낮을수록 높은 우선수위를 배정해서 3개의 카테고리 선정
     """
     
     # 예시: 원본 데이터 df가 있고, 'item_id'와 'target' 컬럼이 있다고 가정
@@ -146,60 +147,6 @@ def run_prophet(final_df: pd.DataFrame) -> (pd.DataFrame):
     """
     각 카테고리별로 Prophet 모델을 학습 및 예측하고 평가 지표 계산.
     """
-    """
-    #results_list = []
-    
-    # 각 카테고리(item_id)별로 모델 학습 및 예측 수행
-    #for category in final_df['item_id'].unique():
-        # group_df = final_df[final_df['item_id'] == category].copy()
-        # # Prophet용 컬럼명 변환: timestamp -> ds, target -> y
-        # train_df = group_df.rename(columns={"timestamp": "ds", "target": "y"})
-        
-        # # 로그 변환: 0 이하의 값이 없도록 np.log1p 사용
-        # train_df["y"] = np.log1p(train_df["y"])
-        
-        # # Prophet 모델 생성 및 학습
-        # model = Prophet(weekly_seasonality=True, yearly_seasonality=False, changepoint_prior_scale=0.7)
-        # model.fit(train_df)
-        
-        # # 미래 바로 다음 주 예측을 위해 period를 1로 설정
-        # future = model.make_future_dataframe(periods=1, freq='W')
-
-        # forecast = model.predict(future)
-        
-        # # 예측값 후처리: 음수값 방지 및 로그 변환 복원
-        # forecast['yhat'] = forecast['yhat'].clip(lower=0)
-        # forecast['yhat'] = np.expm1(forecast['yhat'])
-        # forecast['yhat'] = forecast['yhat'].clip(lower=0)
-        
-        # # 학습 데이터 이후의 예측 결과만 추출 (순수 미래 예측)
-        # last_date = train_df['ds'].max()
-        # future_forecast = forecast[forecast['ds'] > last_date].copy()
-
-        # # 결과 DataFrame 생성: yhat 및 카테고리 정보 추가 (ds 컬럼 제거)
-        # result = future_forecast[['yhat']].copy()
-        # result["Category"] = category
-
-        
-        # # 이동평균 기반 보정: 마지막 8주간의 데이터 범위를 활용하여 보정
-        # last_date = train_df['ds'].max()
-        # window_start_date = last_date - pd.Timedelta(weeks=8)
-        # if window_start_date < train_df['ds'].min():
-        #     window_start_date = train_df['ds'].min()
-        
-        # available_period = last_date - window_start_date
-        # if available_period < pd.Timedelta(weeks=1):
-        #     result['yhat_adjusted'] = result['yhat']
-        # else:
-        #     df_window = group_df[(group_df['timestamp'] >= window_start_date) & (group_df['timestamp'] <= last_date)]
-        #     window_min = df_window['target'].min()
-        #     window_max = df_window['target'].max()
-        #     result['window_min'] = window_min
-        #     result['window_max'] = window_max
-        #     result['yhat_adjusted'] = result['yhat'].clip(lower=window_min, upper=window_max)
-        
-        # results_list.append(result)
-        """
     category_dfs = [
         (final_df[final_df['item_id'] == category].copy(), category)
         for category in final_df['item_id'].unique()
