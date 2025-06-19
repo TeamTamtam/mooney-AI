@@ -89,7 +89,6 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
       "amount": 19800,
       "expense_category": "식비"
     }
-    // ... 최대 12주 분량
   ]
 }
 ```
