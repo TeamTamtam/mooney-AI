@@ -44,7 +44,6 @@ pip install --no-cache-dir -r requirements.txt
 ```
 
 ### 3. 서버 실행 
-실행 후 [Swagger API 테스트]( http://127.0.0.1:8000/docs)에서 API 테스트가 가능합니다. 
 #### 개발 모드 (권장)
 
 ```bash
@@ -56,6 +55,8 @@ uvicorn app.main:app --reload
 ```bash
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
+
+실행 후 [Swagger API 테스트]( http://127.0.0.1:8000/docs)에서 API 테스트가 가능합니다. 
 
 ### 4. API 엔드포인트
 
