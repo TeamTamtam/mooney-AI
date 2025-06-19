@@ -103,12 +103,12 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
 
 ```json
 {
-  "message": "Prediction received",
-  "data": {
-    "predicted_amount": 21000,
-    "target_week": "2024-08-19",
-    "category": "식비"
-  }
+  "predict_results": [
+    {
+      "Category": "식비",
+      "yhat_adjusted": 22000
+    }
+  ]
 }
 ```
 
