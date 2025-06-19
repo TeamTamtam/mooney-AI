@@ -43,9 +43,8 @@ cd mooney-AI
 pip install --no-cache-dir -r requirements.txt
 ```
 
-### 3. 서버 실행
-
-#### 개발 모드
+### 3. 서버 실행 -> 실행 후 * [Swagger API 테스트]( http://127.0.0.1:8000/doc)에서 API 테스트가 가능합니다. 
+#### 개발 모드 (권장)
 
 ```bash
 uvicorn app.main:app --reload
@@ -57,14 +56,7 @@ uvicorn app.main:app --reload
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 
-### 4. Docker로 실행 (권장)
-
-```bash
-docker build -t mooney-ai .
-docker run -p 8000:8000 mooney-ai
-```
-
-## API 엔드포인트
+### 4. API 엔드포인트
 
 ### 🔹 GET `/`
 
